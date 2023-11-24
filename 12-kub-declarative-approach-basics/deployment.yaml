@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  second-app-deployment
+  labels:
+    group: example
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: second-app
+      tier: backend
+    # matchExpressions:
+    #   - {key: app, operator: NotIn, values: [second-app, first-app]}
+  template: # template always create the pod object so no need to add kind here.
+    metadata:
+      labels: # The key and value exist inside the labels is user defined. This key value are used to identify or to specify that pods are running under deployment. it is mentioned on selector
+        app: second-app
+        tier: backend
+    spec:
+      containers:
+        - name:  second-node
+          image:  chitraarasu/kube-first-app # Here you can specify the tag or version of the image.
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            periodSeconds: 10
+            initialDelaySeconds: 5
+        # - name:  my-name
+        #   image:  second-node
+
+
+
+# kubectl apply -f=deployment.yaml
+# kubectl get deployments 
+# kubectl get pods 
+
+
+# Delete the Resouces
+# kubectl delete -f=deployment.yaml, service.yaml 
+# (OR)
+# kubectl delete -f=deployment.yaml -f=service.yaml
+
+# Delete by labels
+# kubectl delete deloyments, services -l group=example

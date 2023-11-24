@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+spec:
+  selector:
+    app: second-app
+  ports:
+    - port:  80 # Local port
+      targetPort: 8080 # container port
+      protocol: TCP
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  second-app-deployment
+  labels:
+    group: example
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: second-app
+      tier: backend
+    # matchExpressions:
+    #   - {key: app, operator: NotIn, values: [second-app, first-app]}
+  template: # template always create the pod object so no need to add kind here.
+    metadata:
+      labels: # The key and value exist inside the labels is user defined. This key value are used to identify or to specify that pods are running under deployment. it is mentioned on selector
+        app: second-app
+        tier: backend
+    spec:
+      containers:
+        - name:  second-node
+          image:  chitraarasu/kube-first-app # Here you can specify the tag or version of the image.
+          imagePullPolicy: Always # always this will pull latest version of image. You can also specify :latest tag next to image.
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            periodSeconds: 10
+            initialDelaySeconds: 5
+
+# We can also use single file instead of seprate file. Need to add --- seprator inbetween all services.
+# kubectl apply -f=master-deployment.yaml

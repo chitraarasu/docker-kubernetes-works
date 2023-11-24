@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  npm:
+    build: ./
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./:/app
+
+
+# docker-compose up
+# docker-compose down
+# docker-compose run npm init // you can call node cmd like this.

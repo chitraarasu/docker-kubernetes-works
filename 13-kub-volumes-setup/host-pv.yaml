@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: host-pv
+spec:
+  capacity: 
+    storage: 1Gi
+  volumeMode: Filesystem
+  storageClassName: standard
+  accessModes: 
+    - ReadWriteOnce
+  hostPath:
+    path: /data
+    type: DirectoryOrCreate
+
+
+# kubectl get sc # this cmd is to get the storage class
+
+# kubectl apply -f=environment.yaml
+# kubectl apply -f=host-pv.yaml
+# kubectl apply -f=host-pvc.yaml
+# kubectl apply -f=deployment.yaml
+# kubectl apply -f=service.yaml

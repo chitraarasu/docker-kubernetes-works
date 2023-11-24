@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: story-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: story
+  template: 
+    metadata:
+      labels:
+        app: story
+    spec:
+      containers:
+        - name: story
+          image: chitraarasu/kube-first-app
+          env: 
+            - name: STORY_FOLDER
+              # value: 'story'  # we can declare the directly here otherwise we can use seprate value.
+              valueFrom:
+                configMapKeyRef: 
+                  name: data-store-env
+                  key: folder
+          volumeMounts:
+            - mountPath: /app/story
+              name: story-volume
+      volumes:
+        - name: story-volume
+          # # emptyDir: {} One pod only can access this volume. multiple replicas can't use this volume.
+          # hostPath: # This also stores data on node level so it is also removed when node restarted.
+          #   path: /data
+          #   type: DirectoryOrCreate
+          
+          PersistentVolumeClaim:  # this is used to persist data on cluster. 
+            claimName: host-pvc

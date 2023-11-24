@@ -1,0 +1,55 @@
+version: '3.8'
+services:
+  mongodb:
+    image: 'mongo'
+    volumes: 
+      - data:/data/db
+    container_name: mongodb
+    # environment:
+    #   - MONGO_INITDB_ROOT_USERNAME=max
+    #   - MONGO_INITDB_ROOT_PASSWORD=secret
+    #   MONGO_INITDB_ROOT_USERNAME=max
+    env_file:
+      - ./env/mongo.env
+
+  backend:
+    build: ./backend
+    # build: 
+    #   context: ./backend
+    #   dockerfile: dockerfile
+    #   args:
+    #     some-args: 1
+    ports:
+      - '80:80'
+    container_name: goals-backend-node
+    volumes:
+      - logs:/app/logs
+      - ./backend:/app
+      - /app/node_modules
+    depends_on:
+      - mongodb
+    env_file:
+      - ./env/backend.env
+
+  frontend:
+    build: ./frontend
+    container_name: goals-front-react
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend/src:/app/src
+    stdin_open: true
+    tty: true
+    depends_on:
+      - backend
+
+volumes:
+  data:
+  logs:
+
+
+# docker-compose up
+# docker-compose up --build // this rebuild image and run container.
+# docker-compose up -d
+# docker-compose stop
+# docker-compose build // this cmd will just build image.
